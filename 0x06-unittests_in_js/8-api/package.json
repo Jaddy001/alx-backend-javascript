@@ -1,0 +1,16 @@
+{
+  "name": "8-api",
+  "version": "1.0.0",
+  "main": "api.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "cloudeze",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.2",
+    "request": "^2.88.2"
+  }
+}
