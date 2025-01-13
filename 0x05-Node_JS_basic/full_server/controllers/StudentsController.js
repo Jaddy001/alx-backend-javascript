@@ -1,43 +1,42 @@
-const readDatabase = require('../utils');
+import { readDatabase } from '../utils.js';
 
 class StudentsController {
-    static async getAllStudents(req, res) {
-        const database = req.app.get('database'); // Get the database file path
+  static async getAllStudents(req, res) {
+    const database = process.argv[2]; // Get database file from arguments
 
-        try {
-            const students = await readDatabase(database);
-            const response = ['This is the list of our students'];
-            Object.keys(students)
-                .sort()
-                .forEach((field) => {
-                    response.push(
-                        `Number of students in ${field}: ${students[field].length}. List: ${students[field].join(', ')}`
-                    );
-                });
-            res.status(200).send(response.join('\n'));
-        } catch (err) {
-            res.status(500).send(err.message);
-        }
+    try {
+      const students = await readDatabase(database);
+      const fields = Object.keys(students).sort();
+      const lines = ['This is the list of our students'];
+
+      fields.forEach((field) => {
+        const studentList = students[field];
+        lines.push(`Number of students in ${field}: ${studentList.length}. List: ${studentList.join(', ')}`);
+      });
+
+      res.status(200).send(lines.join('\n'));
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+
+  static async getAllStudentsByMajor(req, res) {
+    const database = process.argv[2]; // Get database file from arguments
+    const { major } = req.params;
+
+    if (!['CS', 'SWE'].includes(major)) {
+      return res.status(500).send('Major parameter must be CS or SWE');
     }
 
-    static async getAllStudentsByMajor(req, res) {
-        const { major } = req.params;
-        const database = req.app.get('database'); // Get the database file path
-
-        if (!['CS', 'SWE'].includes(major)) {
-            res.status(500).send('Major parameter must be CS or SWE');
-            return;
-        }
-
-        try {
-            const students = await readDatabase(database);
-            const list = students[major] || [];
-            res.status(200).send(`List: ${list.join(', ')}`);
-        } catch (err) {
-            res.status(500).send(err.message);
-        }
+    try {
+      const students = await readDatabase(database);
+      const studentList = students[major] || [];
+      res.status(200).send(`List: ${studentList.join(', ')}`);
+    } catch (error) {
+      res.status(500).send(error.message);
     }
+  }
 }
 
-module.exports = StudentsController;
+export default StudentsController;
 
